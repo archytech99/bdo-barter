@@ -163,8 +163,13 @@ document.getElementById('btnSaveStorage').addEventListener('click', () => {
   const locations = [];
 
   rows.forEach(row => {
-    const name = row.querySelector('input[type="text"]').value.trim();
-    const qty = parseInt(row.querySelector('input[type="number"]').value) || 0;
+    const locSelect = row.querySelector('select.form-select') || row.querySelector('select');
+    const textInput = row.querySelector('input[type="text"]');
+    const name = (locSelect ? locSelect.value : (textInput ? textInput.value : '')).trim();
+
+    const qtyInput = row.querySelector('input[type="number"]');
+    const qty = parseInt(qtyInput ? qtyInput.value : '0', 10) || 0;
+
     if (name && qty >= 0) locations.push({ name, qty });
   });
 
