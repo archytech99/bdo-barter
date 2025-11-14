@@ -7,10 +7,10 @@ let storageData = {};
 let historyData = [];
 let currentItem = null;
 let locationsList = JSON.parse(localStorage.getItem('barterLocations')) || [
-  "Velia", "Lema", "Iliya", "Epheria", "Oquilla"
+  "Port Epheria", "Velia", "Iliya Island", "Oquilla Eye", "Ancado Inner Harbor"
 ];
 
-// load data and render
+// --- Load Barter Items ---
 async function loadBarterItems() {
   try {
     const res = await fetch('data/barterItems.json');
@@ -26,6 +26,7 @@ async function loadBarterItems() {
   renderStorageView();
 }
 
+// --- Render Storage View ---
 function renderStorageView(filters = {}) {
   const container = document.getElementById('tiersContainer');
   container.innerHTML = '';
@@ -132,11 +133,11 @@ function editItem(name) {
   document.getElementById('btnDiscard').style.display = (itemData && itemData.tier === 5) ? 'inline-block' : 'none';
 }
 
+// --- Add Storage Row ---
 document.getElementById('btnAddStorage').addEventListener('click', () => {
   const tbody = document.querySelector('#storageTable tbody');
   addStorageRow(tbody, '', 0);
 });
-
 function addStorageRow(tbody, name = '', qty = 0) {
   const tr = document.createElement('tr');
   const locSelect = document.createElement('select');
@@ -157,7 +158,6 @@ function addStorageRow(tbody, name = '', qty = 0) {
   tr.querySelector('button').addEventListener('click', () => tr.remove());
   tbody.appendChild(tr);
 }
-
 document.getElementById('btnSaveStorage').addEventListener('click', () => {
   const rows = document.querySelectorAll('#storageTable tbody tr');
   const locations = [];
@@ -180,6 +180,7 @@ document.getElementById('btnSaveStorage').addEventListener('click', () => {
   renderStorageView();
 });
 
+// --- Discard Tier 5 Item ---
 document.getElementById('btnDiscard').addEventListener('click', () => {
   if (!currentItem) return;
   if (confirm('Discard Tier 5 item?')) {
@@ -208,13 +209,11 @@ document.getElementById('btnExchange').addEventListener('click', () => {
 
   exchangeModalObj.show();
 });
-
 document.getElementById('fromTier').addEventListener('change', e => {
   const fromTier = parseInt(e.target.value);
   document.getElementById('toTier').value = 'T' + (fromTier + 1);
   updateExchangeForm(fromTier);
 });
-
 document.getElementById('fromItem').addEventListener('change', e => {
   const name = e.target.value;
   const fromLocSel = document.getElementById('fromLocation');
@@ -235,6 +234,7 @@ document.getElementById('fromItem').addEventListener('change', e => {
   }
 });
 
+// --- Update Exchange Form ---
 function updateExchangeForm(fromTier) {
   const fromSel = document.getElementById('fromItem');
   const toSel = document.getElementById('toItem');
@@ -252,10 +252,10 @@ function updateExchangeForm(fromTier) {
     toSel.appendChild(opt);
   });
 
-  // trigger fromItem change once
   fromSel.dispatchEvent(new Event('change'));
 }
 
+// --- Exchange Form Submit ---
 document.getElementById('exchangeForm').addEventListener('submit', e => {
   e.preventDefault();
 
@@ -269,7 +269,6 @@ document.getElementById('exchangeForm').addEventListener('submit', e => {
 
   if (!qtyFrom || !qtyTo) return alert("Please enter valid quantities.");
 
-  // Deduct from source
   const fromData = storageData[fromItem];
   if (!fromData || !fromData.locations?.length)
     return alert("Source item has no stored quantity.");
@@ -280,27 +279,23 @@ document.getElementById('exchangeForm').addEventListener('submit', e => {
 
   fromData.locations[locIndex].qty -= qtyFrom;
   if (fromData.locations[locIndex].qty <= 0)
-    fromData.locations.splice(locIndex, 1); // remove empty location
+    fromData.locations.splice(locIndex, 1);
 
-  // Add to destination
   if (!storageData[toItem]) storageData[toItem] = { locations: [] };
   const toData = storageData[toItem];
   const existingLoc = toData.locations.find(l => l.name === toLocation);
   if (existingLoc) existingLoc.qty += qtyTo;
   else toData.locations.push({ name: toLocation, qty: qtyTo });
 
-  // Log & save
   logHistory('Exchange', `T${fromTier}: ${fromItem} (-${qtyFrom} @${fromLocation}) → ${toItem} (+${qtyTo} @${toLocation})`);
   saveData();
   renderStorageView();
   exchangeModalObj.hide();
 });
 
-// Mobile filter modal
+// --- Mobile Filters ---
 const filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
-
 document.getElementById('btnMobileFilter').addEventListener('click', () => filterModal.show());
-
 document.getElementById('btnApplyFilter').addEventListener('click', () => {
   const tier = document.getElementById('filterTier').value;
   const loc = document.getElementById('filterLocation').value.toLowerCase();
@@ -316,9 +311,7 @@ function logHistory(action, detail) {
   historyData.unshift({ time, action, detail });
   saveData();
 }
-
 document.getElementById('btnHistory').addEventListener('click', renderHistory);
-
 function renderHistory() {
   const table = document.getElementById('historyTable');
   table.innerHTML = historyData.map(h => `
@@ -328,6 +321,7 @@ function renderHistory() {
   hm.show();
 }
 
+// --- Export History ---
 document.getElementById('btnExportHistory').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(historyData, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
@@ -337,6 +331,7 @@ document.getElementById('btnExportHistory').addEventListener('click', () => {
   URL.revokeObjectURL(a.href);
 });
 
+// --- Clear History ---
 document.getElementById('btnClearHistory').addEventListener('click', () => {
   if (confirm('Clear barter history?')) {
     historyData = [];
@@ -345,11 +340,10 @@ document.getElementById('btnClearHistory').addEventListener('click', () => {
   }
 });
 
-// ===== Manage Locations =====
+// --- Manage Locations ---
 function saveLocations() {
   localStorage.setItem('barterLocations', JSON.stringify(locationsList));
 }
-
 function renderLocationsTable() {
   const tbody = document.querySelector('#locationsTable tbody');
   tbody.innerHTML = '';
@@ -369,7 +363,6 @@ function renderLocationsTable() {
     tbody.appendChild(tr);
   });
 }
-
 document.getElementById('btnAddLocation').addEventListener('click', () => {
   const name = document.getElementById('newLocationName').value.trim();
   if (!name) return;
@@ -379,19 +372,17 @@ document.getElementById('btnAddLocation').addEventListener('click', () => {
   saveLocations();
   renderLocationsTable();
 });
-
 document.getElementById('btnManageLocations').addEventListener('click', () => {
   renderLocationsTable();
   const modal = new bootstrap.Modal(document.getElementById('locationsModal'));
   modal.show();
 });
 
-// Save / Export / Clear storage
+// --- Save / Export / Clear storage ---
 function saveData() {
   localStorage.setItem('barterStorage', JSON.stringify(storageData));
   localStorage.setItem('barterHistory', JSON.stringify(historyData));
 }
-
 document.getElementById('btnExportStorage').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(storageData, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
@@ -400,7 +391,6 @@ document.getElementById('btnExportStorage').addEventListener('click', () => {
   a.click();
   URL.revokeObjectURL(a.href);
 });
-
 document.getElementById('btnClearStorage').addEventListener('click', () => {
   if (confirm('Clear all storage data?')) {
     localStorage.clear();
@@ -408,10 +398,9 @@ document.getElementById('btnClearStorage').addEventListener('click', () => {
     renderStorageView();
   }
 });
-
 document.querySelectorAll('.modal').forEach(m => {
   m.addEventListener('hidden.bs.modal', () => {
-    document.activeElement.blur(); // remove focus before aria-hidden applies
+    document.activeElement.blur();
   });
 });
 
