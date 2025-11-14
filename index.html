@@ -223,31 +223,73 @@
     @media (max-width:600px) {
       .app-footer { flex-direction: column; align-items: flex-start; gap: 6px; }
     }
+
+    /* Desktop: original layout */
+    .app-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Mobile layout */
+    @media (max-width: 576px) {
+      .app-top {
+        flex-direction: column;
+        align-items: stretch; /* full width */
+        gap: 8px;
+      }
+
+      /* Title stays left */
+      .app-title-wrap {
+        width: 100%;
+      }
+
+      /* Buttons container moves below + right aligned */
+      .top-actions {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end; /* <-- KEY LINE */
+        gap: 6px;
+      }
+
+      .top-actions .btn,
+      .top-actions .dropdown-toggle {
+        white-space: nowrap;
+      }
+    }
   </style>
 </head>
 <body class="p-3">
   <div class="container-fluid">
     <div class="app-top">
-      <div class="d-flex gap-3 align-items-center">
-        <div class="app-title">Barter Storage Dashboard</div>
-        <small class="text-muted">(sticky tier headers, responsive columns)</small>
+      <div class="app-title-wrap">
+        <div class="d-flex gap-3 align-items-center">
+          <div class="app-title">Barter Storage Dashboard</div>
+        </div>
       </div>
 
-      <!-- mobile layout: collapsible dropdown -->
-      <div class="dropdown d-lg-flex">
-        <button class="btn btn-outline-light btn-sm dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
-          ⚙️ Actions
-        </button>
-        <div class="dropdown-menu dropdown-menu-dark w-100 text-center">
-          <button class="dropdown-item text-success" id="btnExchange">🔄 Exchange</button>
-          <button class="dropdown-item text-secondary" id="btnHistory">🕒 History</button>
-          <button class="dropdown-item text-primary" id="btnExportStorage">💾 Export</button>
-          <button class="dropdown-item text-warning" id="btnManageLocations">📦 Locations</button>
-          <button class="dropdown-item text-danger" id="btnClearStorage">🧹 Clear</button>
-          <button class="dropdown-item text-info" id="btnMobileFilter">🔍 Filter</button>
+      <div class="top-actions d-flex align-items-center gap-2">
+        <label class="btn btn-secondary btn-sm mb-0 import-btn">
+          📥 Import
+          <input type="file" id="importFile" accept=".json" hidden>
+        </label>
+
+        <div class="dropdown actions-dropdown">
+          <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            ⚙️ Actions
+          </button>
+          <div class="dropdown-menu dropdown-menu-dark text-center">
+            <button class="dropdown-item text-success" id="btnExchange">🔄 Exchange</button>
+            <button class="dropdown-item text-secondary" id="btnHistory">🕒 History</button>
+            <button class="dropdown-item text-primary" id="btnExportStorage">💾 Export</button>
+            <button class="dropdown-item text-warning" id="btnManageLocations">📦 Locations</button>
+            <button class="dropdown-item text-danger" id="btnClearStorage">🧹 Clear</button>
+            <button class="dropdown-item text-info" id="btnMobileFilter">🔍 Filter</button>
+          </div>
         </div>
       </div>
     </div>
+
 
     <!-- tiers container (rendered by js) -->
     <div id="tiersContainer" class="tiers-wrap"></div>
@@ -380,7 +422,6 @@
           </table>
         </div>
         <div class="modal-footer">
-          <button id="btnExportHistory" class="btn btn-sm btn-warning">📤 Export</button>
           <button id="btnClearHistory" class="btn btn-sm btn-danger">🧹 Clear</button>
         </div>
       </div>
