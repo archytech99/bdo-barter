@@ -14,257 +14,15 @@
   <!-- Bootstrap -->
   <link href="css/bootstrap-5.3.3.min.css" rel="stylesheet">
 
-  <style>
-    :root{
-      --bg: #0f0f10;
-      --panel: #171717;
-      --muted: #9b9b9b;
-      --card-hover: rgba(255,255,255,0.06);
-      --shadow: 0 6px 18px rgba(0,0,0,0.6);
-    }
-
-    html,body { height: 100%; }
-    body {
-      margin:0;
-      background: var(--bg);
-      color: #eee;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
-
-    .app-top {
-      display:flex;
-      align-items:center;
-      gap:12px;
-      justify-content:space-between;
-      margin-bottom:1rem;
-    }
-
-    .app-title {
-      font-weight: 600;
-      font-size: 1.05rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .app-title::before {
-      content: "";
-      width: 32px;
-      height: 32px;
-      display: inline-block;
-      background-image: url('media/favicon-32x32.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-    }
-
-    /* hide the leading emoji character in the markup without editing the HTML */
-    .app-title::first-letter {
-      font-size: 0;
-      line-height: 0;
-    }
-
-    /* tiers wrapper layout */
-    .tiers-wrap {
-      display:flex;
-      gap:1rem;
-      align-items:flex-start;
-      flex-wrap:wrap;
-    }
-
-    .tier-column {
-      background: var(--panel);
-      border-radius:10px;
-      padding:10px;
-      min-width:220px;
-      flex: 1 1 18%;
-      box-shadow: var(--shadow);
-      display:flex;
-      flex-direction:column;
-      max-height: 67vh;
-      overflow: hidden;
-    }
-
-    /* sticky header inside column */
-    .tier-header {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      padding:8px 10px;
-      border-radius:8px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
-      margin-bottom:8px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      font-weight:600;
-      font-size:0.95rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-    }
-
-    .tier-items {
-      overflow:auto;
-      padding-right:8px;
-    }
-
-    .tier-items::-webkit-scrollbar { width:8px; height:8px; }
-    .tier-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.04); border-radius:8px; }
-
-    /* item card */
-    .item-card {
-      display:flex;
-      gap:10px;
-      align-items:center;
-      padding:8px;
-      border-radius:8px;
-      margin-bottom:8px;
-      cursor:pointer;
-      transition: all .12s ease-in-out;
-      background: rgba(255,255,255,0.02);
-    }
-    .item-card:hover { transform: translateY(-3px); background: var(--card-hover); }
-
-    .item-img {
-      width:42px;
-      height:42px;
-      border-radius:6px;
-      object-fit:cover;
-      background: rgba(255,255,255,0.03);
-      flex: 0 0 42px;
-    }
-
-    .item-info {
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      min-width:0;
-    }
-
-    .item-name { font-weight:600; font-size:0.88rem; line-height:1.05; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .item-location { font-size:0.75rem; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-    .item-right {
-      display:flex;
-      flex-direction:column;
-      align-items:flex-end;
-      gap:4px;
-      min-width:60px;
-    }
-    .item-qty { font-weight:700; font-size:0.92rem; color:#ddd; }
-
-    /* subtle tier label colors in header left badge */
-    .tier-badge {
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-    }
-    .tier-badge .dot {
-      width:12px; height:12px; border-radius:3px; display:inline-block;
-    }
-    .t0 { background:#050505; }
-    .t1 { background:#bdbdbd; }
-    .t2 { background:#43a047; }
-    .t3 { background:#1e88e5; }
-    .t4 { background:#ffb300; }
-    .t5 { background:#e53935; }
-
-    /* header buttons */
-    .top-actions button { margin-left:6px; }
-
-    .dropdown-menu button {
-      width: 100%;
-      text-align: center;
-    }
-
-    #btnMobileFilter {
-      display: none;
-    }
-
-    /* responsive columns: desktop 5, mid 3, small 1 */
-    @media (max-width: 1200px) {
-      .tier-column { flex: 0 0 30%; }
-    }
-    @media (max-width: 900px) {
-      .tier-column { flex: 0 0 48%; }
-    }
-    @media (max-width: 600px) {
-      .tiers-wrap { gap:0.75rem; }
-      .tier-column { flex: 0 0 100%; max-height: none; }
-      .tier-items { max-height: none; }
-    }
-
-    /* small tweaks for modals on mobile */
-    @media (max-width:420px) {
-      .modal-dialog { margin: 0.5rem; }
-    }
-
-    @media (max-width: 768px) {
-      #btnMobileFilter {
-        display: inline-block;
-      }
-    }
-
-    /* Footer */
-    .app-footer {
-      background: rgba(255,255,255,0.02);
-      border-top: 1px solid rgba(255,255,255,0.03);
-      padding: 8px 12px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 0.85rem;
-      border-radius: 8px;
-      margin-top: 1rem;
-    }
-    .app-footer a { color: inherit; text-decoration: underline; }
-    @media (max-width:600px) {
-      .app-footer { flex-direction: column; align-items: flex-start; gap: 6px; }
-    }
-
-    /* Desktop: original layout */
-    .app-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Mobile layout */
-    @media (max-width: 576px) {
-      .app-top {
-        flex-direction: column;
-        align-items: stretch; /* full width */
-        gap: 8px;
-      }
-
-      /* Title stays left */
-      .app-title-wrap {
-        width: 100%;
-      }
-
-      /* Buttons container moves below + right aligned */
-      .top-actions {
-        width: 100%;
-        display: flex;
-        justify-content: flex-end; /* <-- KEY LINE */
-        gap: 6px;
-      }
-
-      .top-actions .btn,
-      .top-actions .dropdown-toggle {
-        white-space: nowrap;
-      }
-    }
-  </style>
+  <!-- Custom styles -->
+  <link href="css/styles.css" rel="stylesheet">
 </head>
 <body class="p-3">
   <div class="container-fluid">
     <div class="app-top">
       <div class="app-title-wrap">
         <div class="d-flex gap-3 align-items-center">
-          <div class="app-title">Barter Storage Dashboard</div>
+          <div class="app-title">Barter Storage Dashboard <span id="sumPriceBarter" class="text-muted">📦</span></div>
         </div>
       </div>
 
@@ -279,12 +37,13 @@
             ⚙️ Actions
           </button>
           <div class="dropdown-menu dropdown-menu-dark text-center">
-            <button class="dropdown-item text-success" id="btnExchange">🔄 Exchange</button>
+            <button class="dropdown-item text-primary" id="btnExchange">🔄 Exchange</button>
+            <button class="dropdown-item text-info" id="btnEditPrices">💰 Prices</button>
+            <button class="dropdown-item text-info" id="btnManageLocations">📦 Locations</button>
             <button class="dropdown-item text-secondary" id="btnHistory">🕒 History</button>
-            <button class="dropdown-item text-primary" id="btnExportStorage">💾 Export</button>
-            <button class="dropdown-item text-warning" id="btnManageLocations">📦 Locations</button>
+            <button class="dropdown-item text-success" id="btnExportStorage">💾 Export</button>
             <button class="dropdown-item text-danger" id="btnClearStorage">🧹 Clear</button>
-            <button class="dropdown-item text-info" id="btnMobileFilter">🔍 Filter</button>
+            <button class="dropdown-item text-warning" id="btnMobileFilter">🔍 Filter</button>
           </div>
         </div>
       </div>
@@ -490,6 +249,40 @@
       </div>
     </div>
   </div>
+
+  <!-- Edit Prices Modal -->
+  <div class="modal fade" id="priceModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-light">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Tier Prices</h5>
+          <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <label class="form-label">Tier 1 Price</label>
+          <input id="priceT1" type="number" class="form-control mb-2" readonly>
+
+          <label class="form-label">Tier 2 Price</label>
+          <input id="priceT2" type="number" class="form-control mb-2" readonly>
+
+          <label class="form-label">Tier 3 Price</label>
+          <input id="priceT3" type="number" class="form-control mb-2">
+
+          <label class="form-label">Tier 4 Price</label>
+          <input id="priceT4" type="number" class="form-control mb-2">
+
+          <label class="form-label">Tier 5 Price</label>
+          <input id="priceT5" type="number" class="form-control mb-2">
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-primary" id="btnSavePrices">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Footer -->
   <footer class="container-fluid">
