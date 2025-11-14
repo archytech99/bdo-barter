@@ -321,16 +321,6 @@ function renderHistory() {
   hm.show();
 }
 
-// --- Export History ---
-document.getElementById('btnExportHistory').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(historyData, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'barterHistory.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-});
-
 // --- Clear History ---
 document.getElementById('btnClearHistory').addEventListener('click', () => {
   if (confirm('Clear barter history?')) {
@@ -384,24 +374,71 @@ function saveData() {
   localStorage.setItem('barterHistory', JSON.stringify(historyData));
 }
 document.getElementById('btnExportStorage').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(storageData, null, 2)], { type: 'application/json' });
+  const exportData = {
+    barterItems: barterItems || [],
+    barterStorage: storageData || {},
+    barterHistory: [],
+    barterLocations: locationsList || []
+  };
+
+  const json = JSON.stringify(exportData, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'barterStorage.json';
+  a.href = url;
+  a.download = 'barterBackup.json';
   a.click();
-  URL.revokeObjectURL(a.href);
+
+  URL.revokeObjectURL(url);
 });
 document.getElementById('btnClearStorage').addEventListener('click', () => {
-  if (confirm('Clear all storage data?')) {
-    localStorage.clear();
-    storageData = {}; historyData = [];
-    renderStorageView();
-  }
+  if (!confirm("Are you sure? This will delete ALL barter data from localStorage.")) return;
+
+  localStorage.clear();
+  storageData = {}; historyData = [];
+  renderStorageView();
 });
 document.querySelectorAll('.modal').forEach(m => {
   m.addEventListener('hidden.bs.modal', () => {
     document.activeElement.blur();
   });
+});
+
+document.getElementById('importFile').addEventListener('change', function () {
+  const file = this.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const json = JSON.parse(e.target.result);
+
+      if (!json.barterItems || !json.barterStorage) {
+        alert("Invalid file format!");
+        return;
+      }
+
+      // Save to localStorage
+      localStorage.setItem("barterItems", JSON.stringify(json.barterItems));
+      localStorage.setItem("barterStorage", JSON.stringify(json.barterStorage));
+
+      if (json.barterHistory)
+        localStorage.setItem("barterHistory", JSON.stringify(json.barterHistory));
+
+      if (json.barterLocations)
+        localStorage.setItem("barterLocations", JSON.stringify(json.barterLocations));
+
+      loadBarterItems();
+      alert("Import successful!");
+      location.reload();
+    }
+    catch (err) {
+      alert("Failed to read import file.");
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
 });
 
 // init
