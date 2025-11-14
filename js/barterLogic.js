@@ -9,6 +9,14 @@ let currentItem = null;
 let locationsList = JSON.parse(localStorage.getItem('barterLocations')) || [
   "Port Epheria", "Velia", "Iliya Island", "Oquilla Eye", "Ancado Inner Harbor"
 ];
+let priceList = JSON.parse(localStorage.getItem('barterPrices')) || [
+  null, null, null, 1000000, 2000000, 10000000
+];
+
+// --- Calculate Tier Value ---
+function formatNumber(num) {
+  return num.toLocaleString('en-US');
+}
 
 // --- Load Barter Items ---
 async function loadBarterItems() {
@@ -30,6 +38,7 @@ async function loadBarterItems() {
 function renderStorageView(filters = {}) {
   const container = document.getElementById('tiersContainer');
   container.innerHTML = '';
+  let sumValue = 0;
 
   const { tier, loc, onlyStock } = filters;
 
@@ -113,6 +122,21 @@ function renderStorageView(filters = {}) {
 
     col.appendChild(itemsWrap);
     container.appendChild(col);
+
+    const footer = document.createElement('div');
+    const price = priceList[t];
+    const totalValue = totalQty * price;
+    footer.className = 'tier-footer d-flex justify-content-between small';
+    footer.innerHTML = `
+      <div>Value: </div>
+      <div class="text-muted text-end"><strong>${formatNumber(totalValue)}</strong></div>
+    `;
+    col.appendChild(footer);
+
+    const sumPriceBarter = document.getElementById('sumPriceBarter');
+    sumValue += totalValue;
+    sumPriceBarter.innerHTML = "💰 <strong>" + formatNumber(sumValue) + "</strong>";
+
   }
 }
 
@@ -368,7 +392,36 @@ document.getElementById('btnManageLocations').addEventListener('click', () => {
   modal.show();
 });
 
-// --- Save / Export / Clear storage ---
+// --- Edit Prices ---
+document.getElementById('btnEditPrices').addEventListener('click', () => {
+  document.getElementById('priceT1').value = priceList[1] ?? '';
+  document.getElementById('priceT2').value = priceList[2] ?? '';
+  document.getElementById('priceT3').value = priceList[3] ?? '';
+  document.getElementById('priceT4').value = priceList[4] ?? '';
+  document.getElementById('priceT5').value = priceList[5] ?? '';
+
+  new bootstrap.Modal(document.getElementById('priceModal')).show();
+});
+document.getElementById('btnSavePrices').addEventListener('click', () => {
+  priceList = [
+    null,
+    parseInt(document.getElementById('priceT1').value) || null,
+    parseInt(document.getElementById('priceT2').value) || null,
+    parseInt(document.getElementById('priceT3').value) || null,
+    parseInt(document.getElementById('priceT4').value) || null,
+    parseInt(document.getElementById('priceT5').value) || null
+  ];
+
+  localStorage.setItem('barterPrices', JSON.stringify(priceList));
+
+  // re-render all tiers
+  renderAllTiers();
+
+  bootstrap.Modal.getInstance(document.getElementById('priceModal')).hide();
+});
+
+
+// --- Save / Export / Import / Clear storage ---
 function saveData() {
   localStorage.setItem('barterStorage', JSON.stringify(storageData));
   localStorage.setItem('barterHistory', JSON.stringify(historyData));
@@ -378,7 +431,8 @@ document.getElementById('btnExportStorage').addEventListener('click', () => {
     barterItems: barterItems || [],
     barterStorage: storageData || {},
     barterHistory: [],
-    barterLocations: locationsList || []
+    barterLocations: locationsList || [],
+    barterPrices: priceList || []
   };
 
   const json = JSON.stringify(exportData, null, 2);
@@ -404,7 +458,6 @@ document.querySelectorAll('.modal').forEach(m => {
     document.activeElement.blur();
   });
 });
-
 document.getElementById('importFile').addEventListener('change', function () {
   const file = this.files[0];
   if (!file) return;
@@ -419,7 +472,6 @@ document.getElementById('importFile').addEventListener('change', function () {
         return;
       }
 
-      // Save to localStorage
       localStorage.setItem("barterItems", JSON.stringify(json.barterItems));
       localStorage.setItem("barterStorage", JSON.stringify(json.barterStorage));
 
@@ -428,6 +480,9 @@ document.getElementById('importFile').addEventListener('change', function () {
 
       if (json.barterLocations)
         localStorage.setItem("barterLocations", JSON.stringify(json.barterLocations));
+
+      if (json.barterPrices)
+        localStorage.setItem("barterPrices", JSON.stringify(json.barterPrices));
 
       loadBarterItems();
       alert("Import successful!");
