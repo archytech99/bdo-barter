@@ -6,6 +6,8 @@ let barterItems = [];
 let storageData = {};
 let historyData = [];
 let currentItem = null;
+let currentFilter = localStorage.getItem('barterFilter') || 'all';
+if (currentFilter === 'all') currentFilter = '';
 let locationsList = JSON.parse(localStorage.getItem('barterLocations')) || [
   "Port Epheria", "Velia", "Iliya Island", "Oquilla Eye", "Ancado Inner Harbor"
 ];
@@ -28,10 +30,11 @@ async function loadBarterItems() {
     console.warn("⚠️ barterItems.json not found or failed to load.", err);
   }
 
+  document.getElementById('filterTier').value = currentFilter;
   storageData = JSON.parse(localStorage.getItem('barterStorage') || '{}');
   historyData = JSON.parse(localStorage.getItem('barterHistory') || '[]');
 
-  renderStorageView();
+  renderStorageView({ tier: currentFilter, loc: '', onlyStock: false });
 }
 
 // --- Render Storage View ---
@@ -322,6 +325,7 @@ const filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
 document.getElementById('btnMobileFilter').addEventListener('click', () => filterModal.show());
 document.getElementById('btnApplyFilter').addEventListener('click', () => {
   const tier = document.getElementById('filterTier').value;
+  localStorage.setItem('barterFilter', (tier === '') ? 'all' : tier);
   const loc = document.getElementById('filterLocation').value.toLowerCase();
   const onlyStock = document.getElementById('filterHasStock').checked;
 
