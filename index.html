@@ -97,66 +97,28 @@
 
   <!-- Exchange Modal (Refactored for multi-storage) -->
   <div class="modal fade" id="exchangeModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content bg-dark text-light">
-        <div class="modal-header">
-          <h5 class="modal-title">Exchange Barter Item</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="exchangeForm">
-            <div class="row mb-3">
-              <div class="col">
-                <label class="form-label">From Tier</label>
-                <select class="form-select form-select-sm" id="fromTier">
-                  <option value="1">T1</option>
-                  <option value="2">T2</option>
-                  <option value="3">T3</option>
-                  <option value="4">T4</option>
-                </select>
-              </div>
-              <div class="col">
-                <label class="form-label">To Tier</label>
-                <input type="text" class="form-control form-control-sm" id="toTier" readonly>
-              </div>
-            </div>
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-light">
 
-            <div class="mb-2">
-              <label class="form-label">From Item</label>
-              <select class="form-select form-select-sm" id="fromItem"></select>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">From Location</label>
-              <select class="form-select form-select-sm" id="fromLocation"></select>
-            </div>
+    <div class="modal-header">
+    <h5 class="modal-title">Batch Exchange</h5>
+    <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    </div>
 
-            <div class="mb-2">
-              <label class="form-label">To Item</label>
-              <select class="form-select form-select-sm" id="toItem"></select>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">To Location</label>
-              <!-- <input type="text" class="form-control form-control-sm" id="toLocation" placeholder="e.g. Lema Island"> -->
-              <select class="form-select form-select-sm" id="toLocation"></select>
-            </div>
+    <div class="modal-body">
+    <div id="exchangeRowsContainer"></div>
 
-            <div class="row mb-2">
-              <div class="col">
-                <label class="form-label">Qty From (Spent)</label>
-                <input type="number" class="form-control form-control-sm" id="exchangeQtyFrom" min="1">
-              </div>
-              <div class="col">
-                <label class="form-label">Qty To (Gained)</label>
-                <input type="number" class="form-control form-control-sm" id="exchangeQtyTo" min="1">
-              </div>
-            </div>
+    <button class="btn btn-sm btn-secondary mt-2 w-100" onclick="addExchangeRow()">
+    + Add Exchange Row
+    </button>
+    </div>
 
-            <div class="text-end">
-              <button type="submit" class="btn btn-success btn-sm">🔁 Execute Exchange</button>
-            </div>
-          </form>
-        </div>
-      </div>
+    <div class="modal-footer">
+    <button class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn btn-primary" id="btnConfirmExchange">Confirm Exchange</button>
+    </div>
+
+    </div>
     </div>
   </div>
 

@@ -217,6 +217,16 @@ body {
     display: none;
 }
 
+.exchange-row select,
+.exchange-row input {
+  font-size: 13px;
+  padding: 2px 6px;
+}
+
+.exchange-row {
+  background: rgba(255,255,255,0.05);
+}
+
 /* responsive columns: desktop 5, mid 3, small 1 */
 @media (max-width: 1200px) {
     .tier-column {
